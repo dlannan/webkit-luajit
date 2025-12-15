@@ -1,0 +1,19 @@
+<!-- Columns Table: Only rendered while table is true --> 
+
+{{#table}}
+<div class="ui-columns-table" data-columns-table="true">
+  <table class="ui-table hex_layout color-pktinfo-background">
+
+    <!-- Columns Table Body: Table columns are rendered outside of this template  -->
+    <tbody>
+      {{#rows}}
+        {{{.}}}
+      {{/rows}}
+    </tbody>
+    <!-- Columns Table Body: Table columns are rendered outside of this template  -->
+
+  </table>
+</div>
+{{/table}}
+
+<!-- Columns Table: Only rendered while table is true -->

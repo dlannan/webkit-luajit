@@ -1,0 +1,15 @@
+
+{{ include('templates/viewer/threejs/threejs-scripts.html.twig', with_context = true) }}
+{{ include('templates/viewer/threejs/fx/threejs-scripts-fx.html.twig', with_context = true) }}
+
+{{ include('templates/viewer/threejs/scene/scene-loader.html.twig', with_context = true) }}
+{{ include('templates/viewer/threejs/scene/scene-loader-anim.html.twig', with_context = true) }}
+
+{# {{ include{'templates/viewer/sim/net-websocket.html.twig')} #}
+{{ include('templates/scenarist/window-events.js.twig', with_context = true) }}
+
+{{ include('templates/viewer/threejs/fx/threejs-sky.html.twig', with_context = true) }}
+{{ include('templates/viewer/threejs/fx/threejs-ground.html.twig', with_context = true) }}
+{{ include('templates/viewer/threejs/fx/threejs-materials.html.twig', with_context = true) }}
+
+{# {{ include('templates/sensors/sensor-menu.html.twig') }} #}

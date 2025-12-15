@@ -1,0 +1,1 @@
+.\bin\windows\x64\luajit.exe .\project\main.lua

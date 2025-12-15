@@ -1,0 +1,335 @@
+
+<script>
+    {# if ( ! Detector.webgl ) Detector.addGetWebGLMessage(); #}
+
+    {{ include('templates/controllers/scenegraph-update.html.twig') }}
+    {{ include('templates/controllers/scenegraph-render.html.twig') }}
+    {{ include('templates/controllers/link-childobject.html.twig') }}
+
+    {{ include('templates/modules/os-scenegraph.html.twig') }}
+
+    {{ include('templates/threejs/threejs-globals.html.twig') }}
+    {{ include('templates/threejs/threejs-globals-sim.html.twig') }}
+
+    {{ include('templates/modules/environments.html.twig') }}
+
+    {{ include('templates/threejs/threejs-mode-statemgr.html.twig') }}
+    {{ include('templates/threejs/threejs-mode.html.twig') }}
+
+    {{ include('templates/states/state-editorStates.html.twig') }}
+    {{ include('templates/states/state-defaultSimState.html.twig') }}
+
+    {# {{ include('templates/sensors/threejs-sensors.html.twig') }} #}
+    {{ include('templates/threejs/threejs-nodes.html.twig') }}
+    {# {{ include('templates/threejs/threejs-ways.html.twig') }} #}
+
+    {# {{ include('templates/threejs/threejs-events.html.twig') }} #}
+
+    {{ include('templates/threejs/threejs-select-panel.html.twig') }}
+    {{ include('templates/threejs/threejs-select-objects.html.twig') }}
+
+    {{ include('templates/threejs/fx/threejs-effects.html.twig') }}
+
+    function loadAnimation(url) {}
+
+    var initDone = false;
+    var animateStarted = false;
+    var firstControl = false; 
+    var curr_env;
+
+    function init() {
+
+        mappedChannels = {};
+
+        //TODO: Cleanup a little so that a "Main SEER Camera" is globally accessable 
+        createPerspOrthoCameras();
+
+        createScene(true); 		// Scene with depth scene
+
+        addColumn( 0, 12 );
+        addCanvasToColumn( 0, 0 );
+
+        container = document.getElementById( 'container0' );
+        allcameras.persp.makeRender( container, window.devicePixelRatio );
+        allcameras.ortho.makeRender( container, window.devicePixelRatio );
+
+        allcameras.persp.active();
+        mappedChannels[0] = allcameras.persp;
+        mappedChannels[1] = allcameras.ortho;
+
+        clearScene();
+        controlsInit = function(controls) {  controls.lon = -135; controls.lat = -20; }
+
+        window.addEventListener( 'resize', onWindowResize, false );
+
+        $("#select-obj").hide();
+        $("#select-spline").hide();
+        initDone = true;
+
+        skyParams( { value: 12.00 } );
+        prepareMainMenu();
+    }
+
+    // Completely clear out the scene
+    function clearScene( doglobals ) {
+
+        if(gridhelper) gridhelper = undefined;
+
+        clearControls();
+        clearLookups();
+        clearAllObjects( doglobals );
+
+        initSky();
+        initGround();
+        initGrass();
+
+        initTools();
+        finalizeTools();
+    }
+
+
+    function onMouseClick( event ) {
+
+        mouseMove = false;
+        // console.log("clicked: ", mode.state);
+        stateManager.MouseEvent( event );
+    }
+
+    function onMouseUp( event ) {
+
+        // check object is spline
+        stateManager.MouseEvent( event );
+
+        mouseMove = false;
+    }
+
+    function onKeyDown( event ) {
+
+        if(event.key === "Shift") { 
+            shiftPressed = true; 
+            //console.log("SHIFT PRESSED");
+        }
+    }
+
+    function onKeyUp( event ) {
+
+        // console.log("KEY RAISED", event);
+        
+        if(event.key === "Shift") { 
+            shiftPressed = false; 
+            //console.log("SHIFT RELEASED");
+        }
+    }	
+
+    function onMouseMove( event ) {
+
+        event.preventDefault();
+
+        // Main window is _always_ channel 0 in the editor
+        var canvaswin = $('.view').get(0);
+        var mousex = ( event.clientX / $(canvaswin).outerWidth() ) * 2 - 1;
+        var mousey = - ( event.clientY / $(canvaswin).outerHeight() ) * 2 + 1;
+        
+        mouse.diffx = mouse.x - mousex;
+        mouse.x = mousex;
+        mouseMove = true;
+
+        mouse.diffy = mouse.y - mousey;
+        mouse.y = mousey;
+        mouseMove = true;
+    }    		
+
+    function onWindowResize() {
+
+        $('canvas').each( function() {
+            fitToContainer(this);
+        });
+
+        render();
+        console.log("Resizing...");
+    }
+
+    // Reorganize the rendering with the new layout.
+    //     Each layout is fixed with 4 views. 1 large and 3 small in most cases with the exception
+    //     of all four the same size.
+    function onSensorLayout() {
+
+    }
+
+    // Render all the view channels per camera 
+    function renderMultiViews() {
+        SceneGraph.sceneRender();
+        $('.view').each( function( idx, obj ) {
+
+            var width = $(obj).outerWidth();
+            var height = $(obj).outerHeight();
+
+            // set the viewport
+            var seerCam = mappedChannels[idx];
+            if(seerCam) {
+                seerCam.active();
+                seerCam.w = width;
+                seerCam.h = height;
+                renderer.setViewport(0, 0, width, height);
+                if(seerCam.effectUpdate) seerCam.effectUpdate( seerCam.renderEffectPass, simstate.deltat, seerCam );
+                if(seerCam.cameraUpdate) seerCam.cameraUpdate( seerCam, seerCam.objectlink );
+            } else {
+                allcameras.persp.active();
+            }
+
+            seerCamera.camera.aspect = width / height;
+            seerCamera.camera.updateProjectionMatrix();
+
+            composer.render(scene, seerCamera.camera);
+
+            if(ocean.surface != undefined) {
+
+                composer.renderToScreen = false;
+                renderOceanSpecial( scene, composer.renderer, seerCamera.camera );
+                composer.renderToScreen = true;
+            }            
+        });
+        allcameras.persp.active();
+    }
+
+    function animate() {
+
+        if(animateStarted == false) animateStarted = true;
+        requestAnimationFrame( animate );
+
+        if(water) {
+            water.material.uniforms.time.value += 1.0 / 60.0;
+            water.material.uniforms.size.value = parameters.size;
+            water.material.uniforms.distortionScale.value = parameters.distortionScale;
+            water.material.uniforms.alpha.value = parameters.alpha;
+        }
+     
+        render();
+    }
+
+    function render() {
+
+        if(initDone === false) return;
+        
+        simstate.deltat = clock.getDelta();
+
+        stateManager.Update(simstate.deltat);
+        SceneGraph.sceneUpdate(simstate.mode);
+        updateAnims(simstate.deltat);		
+
+        if(mouse) {
+            mouse.diffx = 0;
+            mouse.diffy = 0;
+        }
+
+        if(sky) {
+            if(earth) {
+            sky.material.uniforms.time.value = clock.elapsedTime * 0.2;
+            sky.material.uniforms.cloudHeight.value = parameters.cloudHeight;
+            sky.material.uniforms.coverage.value = parameters.coverage;
+            }
+            skyUpdate(parameters);
+        }
+
+        if(controls) {
+
+            mode.camera.lon = controls.lon;
+            mode.camera.lat = controls.lat;
+
+            if(shiftPressed == true) {
+                controls.movementSpeed = 20;
+            } else {
+                controls.movementSpeed = 70;
+            }
+
+            controls.update(simstate.deltat);
+        }
+
+        camera.getWorldDirection( allcameras.persp.dir );
+
+        //if(effectMode == "DEPTH") {
+        //	camera.far = 500.0;
+        //	depthEffect.uniforms.cameraNear = camera.near;
+        //	depthEffect.uniforms.cameraFar = camera.far;
+        //}
+
+        renderMultiViews();
+    
+        // update octree post render
+        // this ensures any objects being added
+        // have already had their matrices updated
+        if(useOctree) {
+            octree.update();
+        }
+
+        TWEEN.update();
+    }
+
+
+    // Watch the statemanager, when its good to start, initiate the rendering loop
+    stateManager.watch("ready", function (id, oldval, newval) {
+
+        console.log("stateManager.ready", newval);
+        if(newval == true) {
+
+            console.log("Starting simulation...");
+            onWindowResize();
+            if(animateStarted == false) animate();
+            
+            {# CleanupLinkedEvents(); #}
+        }
+    });	
+
+    $(document).ready( function() {
+
+        init();
+
+{{ include('templates/viewer/data/scenes.js.twig') }}
+           
+        // Should enable/disable this when mode changes
+        renderer.domElement.addEventListener( 'mousemove', onMouseMove, false );
+        renderer.domElement.addEventListener( 'mousedown', onMouseClick, false );
+        renderer.domElement.addEventListener( 'mouseup', onMouseUp, false );
+
+        $(document.documentElement).keydown( onKeyDown );
+        $(document.documentElement).keyup( onKeyUp );
+
+        $('#ex10').slider({ id: 'slider10',	min: 0,	max: 100, step: 1, value: 50 });	
+        $('#ex10').slider().on('slide', function( newval ) {
+            parameters.coverage = newval.value / 100.0;
+            parameters.cloudHeight = 300.0 + (newval.value * 2.0 - 100);
+        });
+
+        $('#menu-settings-grid').on('click', function(e) {
+            var grid = $('#grid-icon');
+            if( grid.hasClass('fa-square-o') ) {
+                grid.removeClass('fa-square-o');
+                grid.addClass('fa-th-large');
+                gridhelper.visible = true;
+            } else {
+                grid.addClass('fa-square-o');
+                grid.removeClass('fa-th-large');
+                gridhelper.visible = false;
+            }
+        })
+
+        $('#ex11').slider({ id: 'slider11',	min: 0,	max: 24, step: 0.1, value: 12,
+                rangeHighlights: [{ "start": 6, "end": 8, "class": "category1" },
+                                { "start": 18, "end": 20, "class": "category1" },
+                                { "start": 8, "end": 18, "class": "category2" } ]});	
+
+        $('#ex11').slider().on('slide', function( newval ) {
+
+            skyParams( newval );
+        }).data('slider');			
+
+        // do_lj_script("Hello World");
+    });
+
+    $('#scenarist-dulled').hide();
+    $('.nav-circlepop').fadeOut();        
+</script>
+
+{# {{ include('templates/panels/timebearing.html.twig', with_context = true ) }} #}
+{{ include('templates/sensors/sensor-js.html.twig', with_context = true ) }}
+

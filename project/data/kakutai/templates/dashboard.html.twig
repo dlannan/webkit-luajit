@@ -1,0 +1,875 @@
+{% embed 'partials/base-dashboard.html.twig' %}
+
+{% block content %}
+{% include 'dashboard/header.html.twig' %}
+
+{% set query = "[sql-table json]select name,uid,desc from projects where users like '%{{ grav.user.username }}%' ORDER BY modified[/sql-table]" %}
+{% set results = (query|shortcodes)| json_decode %}
+
+{% set iiquery = ('[sql-table json]select * from issues') ~ ' [/sql-table]' %}
+{% set itable = ( iiquery|shortcodes ) | json_decode %}
+
+
+        <div class="my-3 my-md-5">
+          <div class="container">
+            <div class="page-header">
+              <h1 class="page-title">
+                Dashboard
+              </h1>
+            </div>
+
+             <div id="dashboard-summary" class="row row-cards row-deck">
+              <div class="col-md-6 col-lg-3">
+                <div class="card p-3">
+                  <div class="d-flex align-items-center">
+                    <span class="stamp stamp-md bg-green mr-3">
+                      <i class="fe fe-shopping-cart"></i>
+                    </span>
+                    <div>
+                      <h4 class="m-0"><a href="/projects">{{ results|length }} <small>Projects</small></a></h4>
+                      <small class="text-muted">4 modified</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-3">
+                <div class="card p-3">
+                  <div class="d-flex align-items-center">
+                    <span class="stamp stamp-md bg-blue mr-3">
+                      <i class="fe fe-file"></i>
+                    </span>
+                    <div>
+                      <h4 class="m-0"><a href="/issues">{{ itable|length }} <small>Issues</small></a></h4>
+                      <small class="text-muted">14 new issues</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-3">
+                <div class="card p-3">
+                  <div class="d-flex align-items-center">
+                    <span class="stamp stamp-md bg-red mr-3">
+                      <i class="fe fe-users"></i>
+                    </span>
+                    <div>
+                      <h4 class="m-0"><a href="javascript:void(0)">125 <small>Bugs</small></a></h4>
+                      <small class="text-muted">78 outstanding</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-3">
+                <div class="card p-3">
+                  <div class="d-flex align-items-center">
+                    <span class="stamp stamp-md bg-yellow mr-3">
+                      <i class="fe fe-message-square"></i>
+                    </span>
+                    <div>
+                      <h4 class="m-0"><a href="javascript:void(0)">132 <small>Comments</small></a></h4>
+                      <small class="text-muted">16 waiting</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+              <div id="dashboard-latest" class="col-md-12">
+                <div class="row">
+
+    {% for i in 0..3 %}   
+    {% set pp = results[i] %} 
+    {% if pp %}
+                  <div class="col-sm-3">
+                    <div class="card">
+                      <div class="card-header">
+                        <h3 class="card-title">{{ pp.name }}</h3>
+                      </div>
+                      <div class="card-body">
+                        <h6>{{ pp.modified }}</h6>
+                        <div class="scene-card" id="{{ pp.uid|md5 }}"> </div>                    
+                      </div>
+                    </div>
+                  </div>
+    {% endif %}
+    {% endfor %}
+
+
+                </div>
+              </div>
+
+             <div id="dashboard-issues" class="row row-cards row-deck">
+              <div class="col-lg-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Latest Project Issues</h3>
+                  </div>
+{% include 'dashboard/issue-list.html.twig' with { 'limit': '6' } %}                  
+                </div>
+              </div>
+            </div>
+
+            <div class="row row-cards row-deck">
+              <div class="col-lg-6">
+                <div class="card card-aside">
+                  <a href="#" class="card-aside-column"></a>
+                  <div class="card-body d-flex flex-column">
+                    <h4><a href="#">And this isn't my nose. This is a false one.</a></h4>
+                    <div class="text-muted">Look, my liege! The Knights Who Say Ni demand a sacrifice! …Are you suggesting that coconuts migr...</div>
+                    <div class="d-flex align-items-center pt-5 mt-auto">
+                      <div class="avatar avatar-md mr-3" ></div>
+                      <div>
+                        <a href="./profile.html" class="text-default">Rose Bradley</a>
+                        <small class="d-block text-muted">3 days ago</small>
+                      </div>
+                      <div class="ml-auto text-muted">
+                        <a href="javascript:void(0)" class="icon d-none d-md-inline-block ml-3"><i class="fe fe-heart mr-1"></i></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="card card-aside">
+                  <a href="#" class="card-aside-column"></a>
+                  <div class="card-body d-flex flex-column">
+                    <h4><a href="#">Well, I didn't vote for you.</a></h4>
+                    <div class="text-muted">Well, we did do the nose. Why? Shut up! Will you shut up?! You don't frighten us, English pig-dog...</div>
+                    <div class="d-flex align-items-center pt-5 mt-auto">
+                      <div class="avatar avatar-md mr-3" male/16.jpg)"></div>
+                      <div>
+                        <a href="./profile.html" class="text-default">Peter Richards</a>
+                        <small class="d-block text-muted">3 days ago</small>
+                      </div>
+                      <div class="ml-auto text-muted">
+                        <a href="javascript:void(0)" class="icon d-none d-md-inline-block ml-3"><i class="fe fe-heart mr-1"></i></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row row-cards row-deck">
+              <div class="col-12">
+                <div class="card">
+                  <div class="table-responsive">
+                    <table class="table table-hover table-outline table-vcenter text-nowrap card-table">
+                      <thead>
+                        <tr>
+                          <th class="text-center w-1"><i class="icon-people"></i></th>
+                          <th>User</th>
+                          <th>Usage</th>
+                          <th class="text-center">Payment</th>
+                          <th>Activity</th>
+                          <th class="text-center">Satisfaction</th>
+                          <th class="text-center"><i class="icon-settings"></i></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="text-center">
+                            <div class="avatar d-block" >
+                              <span class="avatar-status bg-green"></span>
+                            </div>
+                          </td>
+                          <td>
+                            <div>Elizabeth Martin</div>
+                            <div class="small text-muted">
+                              Registered: Mar 19, 2018
+                            </div>
+                          </td>
+                          <td>
+                            <div class="clearfix">
+                              <div class="float-left">
+                                <strong>42%</strong>
+                              </div>
+                              <div class="float-right">
+                                <small class="text-muted">Jun 11, 2015 - Jul 10, 2015</small>
+                              </div>
+                            </div>
+                            <div class="progress progress-xs">
+                              <div class="progress-bar bg-yellow" role="progressbar" style="width: 42%"
+						     aria-valuenow="42" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                          </td>
+                          <td>
+                            <div class="small text-muted">Last login</div>
+                            <div>4 minutes ago</div>
+                          </td>
+                          <td class="text-center">
+                            <div class="mx-auto chart-circle chart-circle-xs" data-value="0.42" data-thickness="3" data-color="blue">
+                              <div class="chart-circle-value">42%</div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <div class="item-action dropdown">
+                              <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-tag"></i> Action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Another action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Separated link</a>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-center">
+                            <div class="avatar d-block" >
+                              <span class="avatar-status bg-green"></span>
+                            </div>
+                          </td>
+                          <td>
+                            <div>Michelle Schultz</div>
+                            <div class="small text-muted">
+                              Registered: Mar 2, 2018
+                            </div>
+                          </td>
+                          <td>
+                            <div class="clearfix">
+                              <div class="float-left">
+                                <strong>0%</strong>
+                              </div>
+                              <div class="float-right">
+                                <small class="text-muted">Jun 11, 2015 - Jul 10, 2015</small>
+                              </div>
+                            </div>
+                            <div class="progress progress-xs">
+                              <div class="progress-bar bg-red" role="progressbar" style="width: 0%"
+						     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                          </td>
+                          <td>
+                            <div class="small text-muted">Last login</div>
+                            <div>5 minutes ago</div>
+                          </td>
+                          <td class="text-center">
+                            <div class="mx-auto chart-circle chart-circle-xs" data-value="0.0" data-thickness="3" data-color="blue">
+                              <div class="chart-circle-value">0%</div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <div class="item-action dropdown">
+                              <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-tag"></i> Action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Another action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Separated link</a>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-center">
+                            <div class="avatar d-block" >
+                              <span class="avatar-status bg-green"></span>
+                            </div>
+                          </td>
+                          <td>
+                            <div>Crystal Austin</div>
+                            <div class="small text-muted">
+                              Registered: Apr 7, 2018
+                            </div>
+                          </td>
+                          <td>
+                            <div class="clearfix">
+                              <div class="float-left">
+                                <strong>96%</strong>
+                              </div>
+                              <div class="float-right">
+                                <small class="text-muted">Jun 11, 2015 - Jul 10, 2015</small>
+                              </div>
+                            </div>
+                            <div class="progress progress-xs">
+                              <div class="progress-bar bg-green" role="progressbar" style="width: 96%"
+						     aria-valuenow="96" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                          </td>
+                          <td>
+                            <div class="small text-muted">Last login</div>
+                            <div>a minute ago</div>
+                          </td>
+                          <td class="text-center">
+                            <div class="mx-auto chart-circle chart-circle-xs" data-value="0.96" data-thickness="3" data-color="blue">
+                              <div class="chart-circle-value">96%</div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <div class="item-action dropdown">
+                              <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-tag"></i> Action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Another action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Separated link</a>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-center">
+                            <div class="avatar d-block" male/32.jpg)">
+                              <span class="avatar-status bg-green"></span>
+                            </div>
+                          </td>
+                          <td>
+                            <div>Douglas Ray</div>
+                            <div class="small text-muted">
+                              Registered: Jan 15, 2018
+                            </div>
+                          </td>
+                          <td>
+                            <div class="clearfix">
+                              <div class="float-left">
+                                <strong>6%</strong>
+                              </div>
+                              <div class="float-right">
+                                <small class="text-muted">Jun 11, 2015 - Jul 10, 2015</small>
+                              </div>
+                            </div>
+                            <div class="progress progress-xs">
+                              <div class="progress-bar bg-red" role="progressbar" style="width: 6%"
+						     aria-valuenow="6" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                          </td>
+                          <td>
+                            <div class="small text-muted">Last login</div>
+                            <div>a minute ago</div>
+                          </td>
+                          <td class="text-center">
+                            <div class="mx-auto chart-circle chart-circle-xs" data-value="0.06" data-thickness="3" data-color="blue">
+                              <div class="chart-circle-value">6%</div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <div class="item-action dropdown">
+                              <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-tag"></i> Action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Another action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Separated link</a>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-center">
+                            <div class="avatar d-block" >
+                              <span class="avatar-status bg-green"></span>
+                            </div>
+                          </td>
+                          <td>
+                            <div>Teresa Reyes</div>
+                            <div class="small text-muted">
+                              Registered: Mar 4, 2018
+                            </div>
+                          </td>
+                          <td>
+                            <div class="clearfix">
+                              <div class="float-left">
+                                <strong>36%</strong>
+                              </div>
+                              <div class="float-right">
+                                <small class="text-muted">Jun 11, 2015 - Jul 10, 2015</small>
+                              </div>
+                            </div>
+                            <div class="progress progress-xs">
+                              <div class="progress-bar bg-red" role="progressbar" style="width: 36%"
+						     aria-valuenow="36" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                          </td>
+                          <td>
+                            <div class="small text-muted">Last login</div>
+                            <div>2 minutes ago</div>
+                          </td>
+                          <td class="text-center">
+                            <div class="mx-auto chart-circle chart-circle-xs" data-value="0.36" data-thickness="3" data-color="blue">
+                              <div class="chart-circle-value">36%</div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <div class="item-action dropdown">
+                              <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-tag"></i> Action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Another action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Separated link</a>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-center">
+                            <div class="avatar d-block" >
+                              <span class="avatar-status bg-green"></span>
+                            </div>
+                          </td>
+                          <td>
+                            <div>Emma Wade</div>
+                            <div class="small text-muted">
+                              Registered: Mar 20, 2018
+                            </div>
+                          </td>
+                          <td>
+                            <div class="clearfix">
+                              <div class="float-left">
+                                <strong>7%</strong>
+                              </div>
+                              <div class="float-right">
+                                <small class="text-muted">Jun 11, 2015 - Jul 10, 2015</small>
+                              </div>
+                            </div>
+                            <div class="progress progress-xs">
+                              <div class="progress-bar bg-red" role="progressbar" style="width: 7%"
+						     aria-valuenow="7" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                          </td>
+                          <td>
+                            <div class="small text-muted">Last login</div>
+                            <div>a minute ago</div>
+                          </td>
+                          <td class="text-center">
+                            <div class="mx-auto chart-circle chart-circle-xs" data-value="0.07" data-thickness="3" data-color="blue">
+                              <div class="chart-circle-value">7%</div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <div class="item-action dropdown">
+                              <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-tag"></i> Action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Another action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Separated link</a>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-center">
+                            <div class="avatar d-block" >
+                              <span class="avatar-status bg-green"></span>
+                            </div>
+                          </td>
+                          <td>
+                            <div>Carol Henderson</div>
+                            <div class="small text-muted">
+                              Registered: Feb 22, 2018
+                            </div>
+                          </td>
+                          <td>
+                            <div class="clearfix">
+                              <div class="float-left">
+                                <strong>80%</strong>
+                              </div>
+                              <div class="float-right">
+                                <small class="text-muted">Jun 11, 2015 - Jul 10, 2015</small>
+                              </div>
+                            </div>
+                            <div class="progress progress-xs">
+                              <div class="progress-bar bg-green" role="progressbar" style="width: 80%"
+						     aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                          </td>
+                          <td>
+                            <div class="small text-muted">Last login</div>
+                            <div>9 minutes ago</div>
+                          </td>
+                          <td class="text-center">
+                            <div class="mx-auto chart-circle chart-circle-xs" data-value="0.8" data-thickness="3" data-color="blue">
+                              <div class="chart-circle-value">80%</div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <div class="item-action dropdown">
+                              <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-tag"></i> Action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Another action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Separated link</a>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-center">
+                            <div class="avatar d-block" male/20.jpg)">
+                              <span class="avatar-status bg-green"></span>
+                            </div>
+                          </td>
+                          <td>
+                            <div>Christopher Harvey</div>
+                            <div class="small text-muted">
+                              Registered: Jan 22, 2018
+                            </div>
+                          </td>
+                          <td>
+                            <div class="clearfix">
+                              <div class="float-left">
+                                <strong>83%</strong>
+                              </div>
+                              <div class="float-right">
+                                <small class="text-muted">Jun 11, 2015 - Jul 10, 2015</small>
+                              </div>
+                            </div>
+                            <div class="progress progress-xs">
+                              <div class="progress-bar bg-green" role="progressbar" style="width: 83%"
+						     aria-valuenow="83" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                          </td>
+                          <td>
+                            <div class="small text-muted">Last login</div>
+                            <div>8 minutes ago</div>
+                          </td>
+                          <td class="text-center">
+                            <div class="mx-auto chart-circle chart-circle-xs" data-value="0.83" data-thickness="3" data-color="blue">
+                              <div class="chart-circle-value">83%</div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <div class="item-action dropdown">
+                              <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-tag"></i> Action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Another action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Separated link</a>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-4">
+                <div class="card">
+                  <div class="card-header">
+                    <h4 class="card-title">Browser Stats</h4>
+                  </div>
+                  <table class="table card-table">
+                    <tr>
+                      <td width="1"><i class="fa fa-chrome text-muted"></i></td>
+                      <td>Google Chrome</td>
+                      <td class="text-right"><span class="text-muted">23%</span></td>
+                    </tr>
+                    <tr>
+                      <td><i class="fa fa-firefox text-muted"></i></td>
+                      <td>Mozila Firefox</td>
+                      <td class="text-right"><span class="text-muted">15%</span></td>
+                    </tr>
+                    <tr>
+                      <td><i class="fa fa-safari text-muted"></i></td>
+                      <td>Apple Safari</td>
+                      <td class="text-right"><span class="text-muted">7%</span></td>
+                    </tr>
+                    <tr>
+                      <td><i class="fa fa-internet-explorer text-muted"></i></td>
+                      <td>Internet Explorer</td>
+                      <td class="text-right"><span class="text-muted">9%</span></td>
+                    </tr>
+                    <tr>
+                      <td><i class="fa fa-opera text-muted"></i></td>
+                      <td>Opera mini</td>
+                      <td class="text-right"><span class="text-muted">23%</span></td>
+                    </tr>
+                    <tr>
+                      <td><i class="fa fa-edge text-muted"></i></td>
+                      <td>Microsoft edge</td>
+                      <td class="text-right"><span class="text-muted">9%</span></td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-4">
+                <div class="card">
+                  <div class="card-header">
+                    <h2 class="card-title">Projects</h2>
+                  </div>
+                  <table class="table card-table">
+                    <tr>
+                      <td>Admin Template</td>
+                      <td class="text-right">
+                        <span class="badge badge-default">65%</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Landing Page</td>
+                      <td class="text-right">
+                        <span class="badge badge-success">Finished</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Backend UI</td>
+                      <td class="text-right">
+                        <span class="badge badge-danger">Rejected</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Personal Blog</td>
+                      <td class="text-right">
+                        <span class="badge badge-default">40%</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>E-mail Templates</td>
+                      <td class="text-right">
+                        <span class="badge badge-default">13%</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Corporate Website</td>
+                      <td class="text-right">
+                        <span class="badge badge-warning">Pending</span>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Members</h3>
+                  </div>
+                  <div class="card-body o-auto" style="height: 15rem">
+                    <ul class="list-unstyled list-separated">
+                      <li class="list-separated-item">
+                        <div class="row align-items-center">
+                          <div class="col-auto">
+                            <span class="avatar avatar-md d-block" ></span>
+                          </div>
+                          <div class="col">
+                            <div>
+                              <a href="javascript:void(0)" class="text-inherit">Amanda Hunt</a>
+                            </div>
+                            <small class="d-block item-except text-sm text-muted h-1x">amanda_hunt@example.com</small>
+                          </div>
+                          <div class="col-auto">
+                            <div class="item-action dropdown">
+                              <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-tag"></i> Action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Another action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Separated link</a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                      <li class="list-separated-item">
+                        <div class="row align-items-center">
+                          <div class="col-auto">
+                            <span class="avatar avatar-md d-block" ></span>
+                          </div>
+                          <div class="col">
+                            <div>
+                              <a href="javascript:void(0)" class="text-inherit">Laura Weaver</a>
+                            </div>
+                            <small class="d-block item-except text-sm text-muted h-1x">lauraweaver@example.com</small>
+                          </div>
+                          <div class="col-auto">
+                            <div class="item-action dropdown">
+                              <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-tag"></i> Action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Another action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Separated link</a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                      <li class="list-separated-item">
+                        <div class="row align-items-center">
+                          <div class="col-auto">
+                            <span class="avatar avatar-md d-block" ></span>
+                          </div>
+                          <div class="col">
+                            <div>
+                              <a href="javascript:void(0)" class="text-inherit">Margaret Berry</a>
+                            </div>
+                            <small class="d-block item-except text-sm text-muted h-1x">margaret88@example.com</small>
+                          </div>
+                          <div class="col-auto">
+                            <div class="item-action dropdown">
+                              <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-tag"></i> Action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Another action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Separated link</a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                      <li class="list-separated-item">
+                        <div class="row align-items-center">
+                          <div class="col-auto">
+                            <span class="avatar avatar-md d-block" ></span>
+                          </div>
+                          <div class="col">
+                            <div>
+                              <a href="javascript:void(0)" class="text-inherit">Nancy Herrera</a>
+                            </div>
+                            <small class="d-block item-except text-sm text-muted h-1x">nancy_83@example.com</small>
+                          </div>
+                          <div class="col-auto">
+                            <div class="item-action dropdown">
+                              <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-tag"></i> Action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Another action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Separated link</a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                      <li class="list-separated-item">
+                        <div class="row align-items-center">
+                          <div class="col-auto">
+                            <span class="avatar avatar-md d-block" male/34.jpg)"></span>
+                          </div>
+                          <div class="col">
+                            <div>
+                              <a href="javascript:void(0)" class="text-inherit">Edward Larson</a>
+                            </div>
+                            <small class="d-block item-except text-sm text-muted h-1x">edward90@example.com</small>
+                          </div>
+                          <div class="col-auto">
+                            <div class="item-action dropdown">
+                              <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-tag"></i> Action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Another action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Separated link</a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                      <li class="list-separated-item">
+                        <div class="row align-items-center">
+                          <div class="col-auto">
+                            <span class="avatar avatar-md d-block" ></span>
+                          </div>
+                          <div class="col">
+                            <div>
+                              <a href="javascript:void(0)" class="text-inherit">Joan Hanson</a>
+                            </div>
+                            <small class="d-block item-except text-sm text-muted h-1x">joan.hanson@example.com</small>
+                          </div>
+                          <div class="col-auto">
+                            <div class="item-action dropdown">
+                              <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-tag"></i> Action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-edit-2"></i> Another action </a>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-message-square"></i> Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="dropdown-item"><i class="dropdown-icon fe fe-link"></i> Separated link</a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+        </div>
+      </div>
+      <div class="footer">
+        <div class="container">
+        </div>
+      </div>
+      <footer class="footer">
+        <div class="container">
+          <div class="row align-items-center flex-row-reverse">
+            <div class="col-auto ml-lg-auto">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                </div>
+                <div class="col-auto">
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-auto mt-3 mt-lg-0 text-center">
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+<script>
+$(document).ready(function() {
+  {% set query = "[sql-table json]select * from projects where users like '%{{ grav.user.username }}%'[/sql-table]" %}
+  {% set results = (query|shortcodes)| json_decode %}
+
+  {% for pp in results %}  
+  {% if pp %}
+
+    {% set query = ("[sql-table json]select * from scenes where projectid = '" ~ pp.uid ) ~ "' [/sql-table]" %}
+    {% set scenedb = ((query|shortcodes) | json_decode) %}
+    {% if scenedb %}
+    {% set randomscene = random(scenedb) %}
+
+    {% set iconquery = ("[sql-table json]select * from icons where uid = '" ~ randomscene.icon ) ~ "' [/sql-table]" %}
+    {% set icondb = ((iconquery|shortcodes) | json_decode)[0] %}
+
+    $("#{{ pp.uid|md5 }}").html('<img src="data:image/png;base64,{{ icondb.data }}" />');
+
+    $("#{{ pp.uid|md5 }}").on('click', function(e) {
+      const params = jQuery.param({ 
+          'projectid': '{{ pp.uid }}'
+      });
+      window.location.href = "/project?" + params;       
+    });
+
+    {% endif %}
+  {% endif %}
+  {% endfor %}});
+</script>
+
+{% include 'dashboard/footer.html.twig' %}
+{% endblock %}
+{% endembed %}

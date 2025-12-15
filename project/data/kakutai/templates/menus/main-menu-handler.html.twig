@@ -1,0 +1,111 @@
+
+<script>
+
+    function selectMode( mode ) {
+        
+        // console.log($("#menu-mode").text());
+        scenaristMode = mode;
+
+        if(mode === "Main") {
+            $(".menu-main").show();
+            $(".menu-settings").hide();
+            $(".menu-editor").hide();
+            $(".menu-simulator").hide();
+            $(".menu-spline").hide();
+            $(".menu-sensor").hide();
+            $(".menu-event").hide();
+            // $("#menu-mode").text("Settings");
+        }
+        if(mode === "Settings") {
+            $(".menu-main").hide();
+            $(".menu-settings").show();
+            $(".menu-editor").hide();
+            $(".menu-simulator").hide();
+            $(".menu-spline").hide();
+            $(".menu-sensor").hide();
+            $(".menu-event").hide();
+            // $("#menu-mode").text("Editor");
+        }
+        {# if(mode === "Editor") {
+            $(".menu-main").hide();
+            $(".menu-settings").hide();
+            $(".menu-editor").show();
+            $(".menu-simulator").hide();
+            $(".menu-spline").hide();
+            $(".menu-sensor").hide();
+            $(".menu-event").hide();
+        }
+        if(mode === "Simulation") {
+            $(".menu-main").hide();
+            $(".menu-settings").hide();
+            $(".menu-editor").hide();
+            $(".menu-simulator").show();
+            $(".menu-spline").hide();
+            $(".menu-sensor").hide();
+            $(".menu-event").hide();
+        }
+        if(mode === "Sensors") {
+            $(".menu-main").hide();
+            $(".menu-settings").hide();
+            $(".menu-editor").hide();
+            $(".menu-simulator").hide();
+            $(".menu-spline").hide();
+            $(".menu-sensor").show();
+            $(".menu-event").hide();
+        } 
+        if(mode === "Events") {
+            $(".menu-main").hide();
+            $(".menu-settings").hide();
+            $(".menu-editor").hide();
+            $(".menu-simulator").hide();
+            $(".menu-spline").hide();
+            $(".menu-sensor").hide();
+            $(".menu-event").show();
+        } 
+        if(mode === "Splines") {
+            $(".menu-main").hide();
+            $(".menu-settings").hide();
+            $(".menu-editor").hide();
+            $(".menu-simulator").hide();
+            $(".menu-spline").show();
+            $(".menu-sensor").hide();
+            $(".menu-event").hide();
+        } #}
+
+        /*if(mode === "Nodes") {
+            $(".menu-main").hide();
+            $(".menu-settings").hide();
+            $(".menu-editor").hide();
+            $(".menu-spline").hide();
+            $(".menu-builder").show();
+            // $("#menu-mode").text("Builder");
+        }
+        if(mode === "Builder") {
+            $(".menu-main").show();
+            $(".menu-settings").hide();
+            $(".menu-editor").hide();
+            $(".menu-spline").hide();
+            $(".menu-builder").hide();
+            // $("#menu-mode").text("Main");
+        } */
+
+    }
+
+    function prepareMainMenu() {
+
+        // Select Settings mode - by default
+        selectMode("Main");
+
+        // Enable/disable objects based on mode selection
+        $(".menu-mode-dd-item").click( function(e) {
+            selectMode( $(this).text() );
+            toggleNav();
+        })
+
+        $('#cameraDepth').slider({
+            formatter: function(value) {
+                return '' + value;
+            }
+        });
+    }
+</script>

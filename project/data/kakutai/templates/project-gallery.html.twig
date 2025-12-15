@@ -1,0 +1,82 @@
+{% embed 'partials/base-dashboard.html.twig' %}
+
+{% block content %}
+{% include 'dashboard/header.html.twig' %}
+
+{% set query = "[sql-table json]select uid from icons[/sql-table]" %}
+{% set icondb = (query|shortcodes)| json_decode %}
+{% set TLIMIT = 12 %}
+{% set TOFFSET = 0 %}
+
+        <div class="my-3 my-md-5">
+          <div class="container">           
+
+            <div id="gallery-controls" class="page-header">
+              <h1 class="page-title">
+                Gallery
+              </h1>
+              <div class="page-subtitle">1 - 12 of {{ icondb|length }} photos</div>
+              <div class="page-options d-flex">
+
+<div class="btn-group">              
+  <label class="btn btn-secondary issue-controls-align">
+    <i class="fe fe-chevron-left"></i>
+  </label>
+  <label class="btn btn-secondary mr-2 issue-controls-align">
+    <i class="fe fe-chevron-right"></i>
+  </label>                
+</div>  
+
+                <select class="form-control custom-select w-auto">
+                  <option value="asc">Newest</option>
+                  <option value="desc">Oldest</option>
+                </select>
+                <div class="input-icon ml-2">
+                  <span class="input-icon-addon">
+                    <i class="fe fe-search"></i>
+                  </span>
+                  <input type="text" class="form-control w-10" placeholder="Search photo">
+                </div>
+              </div>
+            </div>
+            <div id="gallery-list" class="row row-cards">
+{% set query = ((("[sql-table json]select uid,name,data,editname,edittime from icons limit " ~ TLIMIT) ~ " offset ") ~ TOFFSET) ~ "[/sql-table]" %}
+{% set results = (query|shortcodes)| json_decode %}
+
+{% for icon in results %}
+{% include "html/project/gallery-card.html.twig" with {icon: icon} %}
+{% endfor %}
+            </div>
+          </div>
+        </div>
+
+      <footer class="footer">
+        <div class="container">
+          <div class="row align-items-center flex-row-reverse">
+            <div class="col-auto ml-lg-auto">
+              <div class="row align-items-center">
+                <div class="col-auto">
+                </div>
+                <div class="col-auto">
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-auto mt-3 mt-lg-0 text-center">
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+<script>
+
+$(document).ready(function() {
+
+});
+
+</script>
+
+{% include 'dashboard/footer.html.twig' %}
+
+{% endblock %}
+{% endembed %}

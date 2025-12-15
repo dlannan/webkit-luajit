@@ -1,0 +1,57 @@
+{% set selectedobject =  'object' %}
+{% set sceneid = 'sceneid'  %} 
+{% set projectid = 'projectid'  %} 
+{% set viewmode = 'viewmode'  %} 
+{% set cameraeffect = 'cameraeffect' %}
+
+{% set theme_url = www_dir %}
+
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> 
+
+<html class="no-js" lang="en"><!--<![endif]-->
+<head>
+{{ include('templates/viewer/head.html.twig', with_context = true) }}
+</head>
+<body>
+
+{{ include('templates/viewer/threejs/threejs-utils.html.twig', with_context = true) }}
+{{ include('templates/viewer/threejs/threejs-tools.html.twig', with_context = true) }}
+
+{{ include('templates/menus/navigation.html.twig', with_context = true) }}
+
+{% block header %}
+    <div class="entry-header">
+      <div class="header-title">
+      </div><!-- /.header-title -->
+    </div><!-- /.entry-header -->
+{% endblock %}
+
+<div id="main" role="main">
+<div id="scenarist-camera"></div>
+<div id="scenarist-dulled"></div>
+
+{{ include('templates/viewer/base-content.html.twig', with_context = true) }} 
+
+{{ include('templates/viewer/base-js.html.twig', with_context = true) }}
+
+{{ include('templates/viewer/scripts.html.twig', with_context = true) }}
+
+{{ include('templates/viewer/camera-view.html.twig', with_context = true) }} 
+
+</div><!-- /#main -->
+
+<div class="footer-wrapper">
+  <footer role="contentinfo">
+      {{ include('templates/viewer/footer.html.twig', with_context = true) }}
+  </footer>
+</div><!-- /.footer-wrapper -->
+
+</body>
+</html>
+
+
+

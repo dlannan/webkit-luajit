@@ -1,0 +1,116 @@
+var demo_grass = {
+    'name':'Demo Grass01',
+    'sceneid':'98',
+    'projectid':6,
+    'edituser':'dlannan',
+    'edittime':'2020-06-12T12:43:53.499Z',
+    'data':{
+        'world':{
+            'url':{
+                'name':'demo-grass01',
+                'format':'gltf',
+                'json':'',
+                'loadscene':'',
+                'url':'file:///database/environments/demo-grass01/demo_grass01.gltf',
+                'gloadscene':'',
+                'child':''
+            },
+            'uid':'1590250378446',
+            'name':'demo_grass01',
+            'position':[0,0,0],
+            'rotation':[0,0,0,'XYZ']
+    }}
+};
+
+var demo_rocky = { 
+    'name':'Demo Rocky01',
+    'sceneid':'101',
+    'projectid':6,
+    'edituser':'dlannan',
+    'edittime':'2020-05-27T17:06:57.641Z',
+    'data':{
+        'world':{
+            'url':{
+                'name':'demo-rocky01',
+                'format':'gltf',
+                'json':'',
+                'loadscene':'',
+                'url':'file:///database/environments/demo-rocky01/surrounds.gltf',
+                'gloadscene':'',
+                'child':''
+            },
+            'uid':'1590599190968',
+            'name':'demo_rocky01',
+            'position':[0,0,0],
+            'rotation':[0,0,0,'XYZ']
+    }}
+};
+
+
+var demo_ocean = {
+    'name':'Demo Ocean01',
+    'sceneid':'100',
+    'projectid':6,
+    'edituser':'dlannan',
+    'edittime':'2020-05-27T00:53:30.071Z',
+    'data':{
+        'world':{
+            'url':{
+                'name':'ocean',
+                'format':'gltf',
+                'json':'','loadscene':
+                'loadScene.js',
+                'url':'file:///database/environments/maritime-ocean/ocean.gltf',
+                'gloadscene':'',
+                'child':''
+            },
+            'uid':'1590326009673',
+            'name':'ocean',
+            'position':[0,0,0],
+            'rotation':[0,0,0,'XYZ']
+    }}    
+}
+
+
+// Create handlers for each button to load a scene.
+$('#menu-main-scene-ocean').click( function() {
+    clearScene(true);
+    loadLocalScene( demo_ocean, function() { 
+        onWindowResize(); 
+        layoutLoaders.scenestate = 1;
+    });
+});
+
+$('#menu-main-scene-grass').click( function() {
+    clearScene(true);
+    loadLocalScene( demo_grass, function() { 
+        onWindowResize(); 
+        layoutLoaders.scenestate = 1;
+    });
+});
+
+$('#menu-main-scene-rocks').click( function() {
+    clearScene(true);
+    loadLocalScene( demo_rocky, function() { 
+        onWindowResize(); 
+        layoutLoaders.scenestate = 1;
+    });
+});
+
+$('#menu-main-scene-empty').click( function() {
+    clearScene(true);
+
+    scenestatus.loaded = false;     
+    clearSelection();
+
+    scenestatus.loaded = true;     
+    scenestatus.loadtime = Date.now();         
+    onWindowResize(); 
+});
+
+// Default scene 
+loadLocalScene( demo_grass, function() { 
+    layoutLoaders.scenestate = 1;
+    onWindowResize(); 
+});
+

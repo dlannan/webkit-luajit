@@ -1,0 +1,11 @@
+Model Information:
+* title:	Low-poly B1 Lancer
+* source:	https://sketchfab.com/3d-models/low-poly-b1-lancer-e303aa7fcff549a889ab7e5d188225c6
+* author:	SIpriv (https://sketchfab.com/S1Priv)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Low-poly B1 Lancer" (https://sketchfab.com/3d-models/low-poly-b1-lancer-e303aa7fcff549a889ab7e5d188225c6) by SIpriv (https://sketchfab.com/S1Priv) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -1,0 +1,326 @@
+
+<script type="text/javascript" src="{{www_dir}}/assets/js/vendors/goldenlayout.min.js"></script>
+<script type="text/javascript" src="{{www_dir}}/assets/js/vendors/tree.jquery.js"></script>
+<script type="text/javascript" src="{{www_dir}}/assets/js/vendors/jquery.columns.min.js"></script>
+<script type="text/javascript" src="{{www_dir}}/assets/js/vendors/highchart_min.js"></script>
+
+<script type="text/javascript" src="{{www_dir}}/assets/js/vendors/images-grid.js"></script>
+
+<script type="text/javascript">
+var view_textures;
+
+// ----------------------------------------------------------------------------------------
+/* Build texture list for viewing. */
+var imagecache = {};
+
+function addImage( images, img ) {
+    
+    if(imagecache[img.currentSrc] == undefined) {
+
+        images.push({
+            src: img.currentSrc,
+            title: img.currentSrc
+        });
+        imagecache[img.currentSrc] = img.currentSrc;
+    }
+}
+
+// ----------------------------------------------------------------------------------------
+
+function addTextureMap( material, images ) {
+
+    if(material.map&& material.map.image)  {
+        addImage(images, material.map.image);
+    }
+    if(material.envMap && material.envMap.image) {       
+        addImage(images, material.envMap.image)
+    }
+    if(material.normalMap && material.normalMap.image) {
+        addImage(images, material.normalMap.image)
+    }
+    if(material.bumpMap && material.bumpMap.image) {
+        addImage(images, material.bumpMap.image)
+    }
+    if(material.roughnessMap && material.roughnessMap.image) {
+        addImage(images, material.roughnessMap.image)
+    }
+    if(material.metalnessMap && material.metalnessMap.image) {
+        addImage(images, material.metalnessMap.image)
+    }
+    if(material.aoMap && material.aoMap.image) {
+        addImage(images, material.aoMap.image)
+    }
+}
+
+// ----------------------------------------------------------------------------------------
+
+function textureList() {
+
+    var images = [];
+    imagecache = {};
+
+    scene.traverse( function ( node ) {
+
+        if(node != null && node != undefined && node.isMesh){ 
+            if ( node.material ) { 
+
+                if(node.material.length > 1) {
+                    for(var i = 0; i<node.material.length; i++) {
+
+                        var material = node.material[i];
+                        addTextureMap( material, images );
+                    }
+                } else {
+                    addTextureMap( node.material, images );
+                }
+            }
+        }        
+    });
+
+    // Returns a list of images
+    return images;
+}
+
+// ----------------------------------------------------------------------------------------
+function updateProperties( props )
+{
+    $("#properties_panel").columns('destroy');
+    $("#properties_panel").columns({
+        data:props,
+        size: 50,
+        templateFile: "/assets/js/templates/properties.mst",
+        schema: [
+            {"header":"Property Key", "key":"propname"},
+            {"header":"Property Value", "key":"propvalue"}
+        ]  
+    });     
+}
+
+function Vec3ToString( vec3 )
+{
+    return "[ "+ vec3.x.toFixed(4) + ", " + vec3.y.toFixed(4) + ", " + vec3.z.toFixed(4) + " ]";
+}
+
+// ----------------------------------------------------------------------------------------
+layoutLoaders.watch("scenestate", function (id, oldval, newval) {
+
+    console.log("scenestate changed", newval);
+    var scene_images = textureList();
+    view_textures.getElement().html( '<div id="imgs"></div>' );
+
+    $('#imgs').imagesGrid({
+        images: scene_images
+    });    
+});
+
+layoutLoaders.watch("modelstate", function (id, oldval, newval) {
+
+    console.log("modelstate changed", newval);
+});
+
+// ----------------------------------------------------------------------------------------
+// Initial tree test data
+var folder_data = [
+    {
+        name: 'node1', id: 1,
+        children: [
+            { name: 'child1', id: 2 },
+            { name: 'child2', id: 3 }
+        ]
+    },
+    {
+        name: 'node2', id: 4,
+        children: [
+            { name: 'child3', id: 5 }
+        ]
+    }
+];
+
+// ----------------------------------------------------------------------------------------
+var config = {
+    settings: {
+        hasHeaders: true,
+        showPopoutIcon: false,
+        showCloseIcon: false
+    },
+    content: [{
+        type: 'row',
+      content:[{
+        type: 'stack',
+        width: 75,
+        content:[{
+              type: 'component',
+              componentName: 'view_scenarist',
+              title:'Scenarist View'
+          },{
+              type: 'component',
+              componentName: 'view_textures',
+              title:'Textures View'
+          }]
+      },{
+            type: 'column',
+            content:[{
+                type: 'component',
+                componentName: 'fileView',
+				componentState: { label: "fileList" }
+            },{
+                type: 'component',
+                componentName: 'properties',
+				componentState: { label: "fileProperties" }
+            }]
+        }]
+    }]
+};
+
+// ----------------------------------------------------------------------------------------
+
+function setupLayout(myLayout)
+{
+    sed_getfiles().then(result => { 
+        folder_data = result.data; 
+        console.log("DAta---------> " + folder_data);
+
+    // ----------------------------------------------------------------------------------------
+    myLayout.registerComponent( 'view_scenarist', function( container, state ){
+
+        var element = $('#scenarist').detach();
+        container.getElement().append(element);
+        element.css("display", "");
+        container.on('resize', function () {
+            onWindowResize();
+        });    
+    });
+
+    myLayout.registerComponent( 'view_textures', function( container, state ){
+
+        view_textures = container;
+        container.on('resize', function () {
+            console.log("Resize Texture View.");
+        });
+    });
+
+    myLayout.registerComponent( 'properties', function( container, state ){
+        //container.setTitle("<h2>Test</h2>");
+        $(container.getElement()).attr("id", "properties_panel");
+    });
+
+    myLayout.on('tabCreated', function(tab){
+        tab.closeElement.hide();
+    });
+
+    myLayout.registerComponent( 'fileView', function( container, state ){
+
+        var ele = container.getElement();
+        $(ele).css("overflow-y", "scroll");
+        $(ele).css("user-select", "none");
+
+        $(ele).tree({
+            data: folder_data,
+            autoOpen: true,
+            dragAndDrop: true,
+
+            onCreateLi: function(node, $li) {
+                var element = $li.find(".jqtree-element");
+                element.addClass('select-model');
+                element.attr("node-id", node.id);
+                element.attr("node-parent", node.parent.name);
+
+                element.on( 'click', function(e) {
+                    if (node && !node.name.startsWith("/")) {
+
+                        var modelformat = node.name.replace(/^.*\./, '');
+                        var parentpath = "";
+                        var thisparent = node.parent;
+                        while(thisparent) {
+                            parentpath = thisparent.name + parentpath;
+                            thisparent = thisparent.parent;
+                        }
+
+                        var fullpath = decodeURI( parentpath + "/" + node.name );
+                        // console.log("FULLPATH: ", fullpath);
+                        var urlpath = "database/models/" + fullpath;
+                        model_data = {
+                            url: urlpath,
+                            name: node.name,
+                            format: modelformat,
+                            parentType: "models"
+                        };
+                        if(modelformat == "obj") {
+                            model_data["mtlfilename"] = "database/models/" + fullpath.replace(/\.[^/.]+$/, "") + ".mtl";
+                        }
+
+                        clearThree(models);
+                        objects = [];
+                        objectsSearch = [];
+
+                        // Load the object
+                        loadLocalModel( model_data, function( model ) {
+
+                            const box = new THREE.Box3().setFromObject(model);
+                            const boxSize = box.getSize(new THREE.Vector3());
+                            const boxCenter = box.getCenter(new THREE.Vector3());
+                            //console.log(boxSize);
+                            //console.log(boxCenter);
+
+                            var model_props = [
+                                {"propname":"Object Name", "propvalue": node.name}, 
+                                {"propname":"Bound Size", "propvalue": Vec3ToString(boxSize)}, 
+                                {"propname":"Bound Center", "propvalue": Vec3ToString(boxCenter)}
+                            ]; 
+                            console.log(model_props);
+                            updateProperties( model_props );
+
+                            //console.log("--> Model: ", model);
+
+                            models.add(model);
+                            var ent = SceneGraph.addMoverObject( model );
+
+                            onWindowResize();
+                            setTimeout(function() {
+                                layoutLoaders.scenestate = 1;
+
+                            }, 200);
+                        });
+                    }
+                });
+            },
+            closedIcon: $('<div class="fileview-icon fas fa-caret-square-o-right"></div>'),
+            openedIcon: $('<div class="fileview-icon fas fa-caret-square-o-down"></div>')
+        });
+    });
+
+
+        myLayout.init();
+
+        var model_properties = [
+            {"propname":"Object Name", "propvalue":" Name "}, 
+            {"propname":"Bound Size", "propvalue":" [20, 20, 20]"}, 
+            {"propname":"Bound Center", "propvalue":" [0, 0, 0]"}
+        ]; 
+
+        $("#properties_panel").columns({
+            data:model_properties,
+            size: 50,
+            templateFile: "/assets/js/templates/properties.mst",
+            schema: [
+                {"header":"Property Key", "key":"propname"},
+                {"header":"Property Value", "key":"propvalue"}
+            ]  
+        });         
+    });	
+}
+// ----------------------------------------------------------------------------------------
+
+var myLayout = new GoldenLayout( config );
+setupLayout(myLayout);
+
+// ----------------------------------------------------------------------------------------
+
+$( document ).ready(function() {
+    
+    
+});
+
+// ----------------------------------------------------------------------------------------
+
+</script>
