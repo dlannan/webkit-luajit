@@ -11,7 +11,7 @@ An application framework built around:
 
 
 
-<img src="./images/screenshots/2025-12-15\_13-21\_1.png">
+<img src="./images/screenshots/2025-12-15_13-21_1.png">
 
 
 
@@ -47,11 +47,11 @@ https://sketchfab.com/S1Priv
 
 
 
-<img src="./images/screenshots/2025-12-15\_13-22.png">
+<img src="./images/screenshots/2025-12-15_13-22.png">
 
-<img src="./images/screenshots/2025-12-15\_13-23.png">
+<img src="./images/screenshots/2025-12-15_13-23.png">
 
-<img src="./images/screenshots/2025-12-15\_13-24.png">
+<img src="./images/screenshots/2025-12-15_13-24.png">
 
 
 
@@ -67,7 +67,7 @@ https://sketchfab.com/steam813
 
 
 
-<img src="./images/screenshots/2025-12-15\_13-21.png">
+<img src="./images/screenshots/2025-12-15_13-21.png">
 
 
 
